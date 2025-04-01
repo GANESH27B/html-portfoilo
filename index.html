@@ -12,7 +12,19 @@
     <header>
     <div id="Home">
        
-        <div id="homelogo"><i class="fa-solid fa-bars"></i><h1 class="Home">HOME</h1></div>
+        <div id="homelogo" onclick="loginopen()"><i class="fa-solid fa-bars"></i><h1 class="Home">HOME</h1>
+            <div class="loginpage">
+                <form id="form">
+                    <h1 style=" color: yellow; height: 50px; text-emphasis-position: 200px;">Login Here</h1>
+                    <input  class="Username" type="text" placeholder="Enter Username"   style="height: 30px; width: 300px; border-radius: 20px; border: 2px solid white;text-indent: 30px; background-color: aqua;"><br><br>
+                    <input class="password" type="password" placeholder="Enter password" style="height: 30px; width: 300px; border-radius: 20px; border: 2px solid white; text-indent: 30px; background-color: aqua;"><br><br>
+                    <button href="" style="width: 200px; height: 30px; border-radius: 20px; background-color: yellow; border: 3px solid rgb(226, 208, 9);"><b>Login</b></button><br><br>
+                    <p>Don't have an acount <a href="" style="text-decoration: none; color: yellow;">Sign up</a> here</p><br>
+                    <p>Login with</p>
+                    <a href="https://www.facebook.com/login.php/"><img src="https://logodownload.org/wp-content/uploads/2014/09/facebook-logo-1-2.png" height="20px"></a>
+                    <a href="https://accounts.google.com/v3/signin/identifier?service=accountsettings&continue=https%3A%2F%2Fmyaccount.google.com%2Fu%2F0%2F%3Futm_source%3DYouTubeWeb%26tab%3Drk%26utm_medium%3Dact%26gar%3DWzgwLCIyMzMzODciXQ%26tab%3Drk%26hl%3Den-GB&hl=en-GB&ec=GAlAwAE&authuser=0&ddm=1&flowName=GlifWebSignIn&flowEntry=AddSession"><img src="http://pluspng.com/img-png/google-logo-png-open-2000.png" height="20px" style="margin-left: 30px;"></a>
+                </form>
+            </div></div>
         <div id="search"><select style="height: 34px; background-color: rgb(215, 226, 238);border-top-left-radius: 7px; border-bottom-left-radius: 7px;"><option>ALL</option></select><input placeholder="Search" class="searchbar"><div id="enter"><i class="fa-solid fa-magnifying-glass" style="margin-left: 10px;"></i></div></div>
         <div id="messagebox"><i class="fa-solid fa-comment-dots"></i></div>
         <button class="photo" onclick="loginopen()"></button>

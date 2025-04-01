@@ -16,7 +16,7 @@
 #three{background-color: white; height: 200px; width: 200px;box-shadow: 1px 10px 20px 20px rgb(70, 64, 65); border-radius: 20px; } #three:hover{translate: 2px;}
 #four{background-color: white; height: 200px; width: 200px; box-shadow: 1px 10px 20px 20px rgb(70, 64, 65);border-radius: 20px; } #four:hover{translate: 2px;}
 #twobox{height: 500px;  background-color: rgb(241, 248, 255); margin: 1cm; border-radius: 10px; }
-.loginpage{ width: auto; height:auto; border-radius: 30px;  min-height:0px;border: 10px solid black;  position: fixed; margin-top: 700px; margin-left: 300px; margin-bottom: 10px; backdrop-filter: blur(15px); background-size: cover; opacity: 0; }
+.loginpage{ width: 50vw; height:100vh; border-radius: 30px;  min-height:0px;border: 10px solid black;  position: fixed; margin-top: 700px; margin-left: 300px; margin-bottom: 10px; backdrop-filter: blur(15px); background-size: cover; opacity: 0; }
 .show{opacity: 1;}
 #form{
     text-align: center;
