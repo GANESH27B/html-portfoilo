@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f9fb;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: #fff;
+      height: 100vh;
+      padding: 20px;
+      box-shadow: 1px 0 5px rgba(0,0,0,0.1);
+      position: fixed;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .sidebar ul li {
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    .sidebar ul li.active {
+      font-weight: bold;
+      color: #3b82f6;
+    }
+
+    .main {
+      margin-left: 240px;
+      padding: 40px;
+      transition: margin 0.3s ease;
+    }
+
+    .section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 24px;
+    }
+
+    .invite-form input[type="email"],
+    .invite-form select {
+      padding: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+    }
+
+    .invite-form button {
+      padding: 10px 15px;
+      background: #3b82f6;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+
+    .team-list table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .team-list th, .team-list td {
+      padding: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .team-list th {
+      text-align: left;
+      background: #f0f2f5;
+    }
+
+    .team-list button {
+      background: none;
+      border: none;
+      color: #3b82f6;
+      cursor: pointer;
+    }
+
+    .team-list button:hover,
+    .invite-form button:hover {
+      text-decoration: underline;
+    }
+
+    input.edit-input,
+    select.edit-select {
+      padding: 5px;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: auto;
+        transform: translateX(-100%);
+        z-index: 1000;
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 20px;
+      }
+
+      .toggle-sidebar-btn {
+        display: inline-block;
+        padding: 10px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        margin: 10px;
+        border-radius: 5px;
+      }
+
+      .team-list table,
+      .team-list thead,
+      .team-list tbody,
+      .team-list th,
+      .team-list td,
+      .team-list tr {
+        display: block;
+        width: 100%;
+      }
+
+      .team-list thead {
+        display: none;
+      }
+
+      .team-list td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        text-align: left;
+        position: relative;
+      }
+
+      .team-list td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="toggle-sidebar-btn" onclick="toggleSidebar()">☰ Menu</button>
+
+  <div class="sidebar" id="sidebar">
+    <h2>tings</h2>
+    <ul>
+      <li>My details</li>
+      <li>Profile</li>
+      <li>Password</li>
+      <li class="active">Team <span>(48)</span></li>
+      <li>Billing</li>
+      <li>Email</li>
+      <li>Notifications</li>
+      <li>Integrations</li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <div class="section">
+      <h1>Team management</h1>
+      <p>Manage your team members and their account permissions here.</p>
+      <form class="invite-form" id="inviteForm">
+        <div id="inviteInputs">
+          <div>
+            <input type="email" name="email[]" placeholder="example@example.com" required />
+            <select name="role[]" required>
+              <option disabled selected>Select Role</option>
+              <option>Read-only</option>
+              <option>Admin</option>
+            </select>
+          </div>
+        </div>
+        <button type="button" onclick="addInviteField()">+ Add another</button>
+        <button type="submit">Send invites</button>
+      </form>
+    </div>
+
+    <div class="section team-list">
+      <h2>Team members</h2>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="teamTable">
+          <!-- JavaScript will inject rows here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+    }
+
+    function addInviteField() {
+      const container = document.getElementById('inviteInputs');
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <input type="email" name="email[]" placeholder="example@example.com" required />
+        <select name="role[]" required>
+          <option disabled selected>Select Role</option>
+          <option>Read-only</option>
+          <option>Admin</option>
+        </select>
+      `;
+      container.appendChild(div);
+    }
+
+    document.getElementById('inviteForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const emails = document.querySelectorAll('input[name="email[]"]');
+      const roles = document.querySelectorAll('select[name="role[]"]');
+      const teamTable = document.getElementById('teamTable');
+
+      for (let i = 0; i < emails.length; i++) {
+        const email = emails[i].value.trim();
+        const role = roles[i].value;
+
+        if (email && role) {
+          const namePart = email.split('@')[0].replace(/\./g, ' ');
+          const capitalized = namePart
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td data-label="Select"><input type="checkbox" /></td>
+            <td data-label="Name" data-email="${email}">${capitalized} <br /><small>${email}</small></td>
+            <td data-label="Role">${role}</td>
+            <td data-label="Actions">
+              <button class="edit-btn">Edit</button>
+              <button class="delete-btn">Delete</button>
+            </td>
+          `;
+          teamTable.appendChild(row);
+        }
+      }
+
+      alert('Invites sent successfully!');
+      document.getElementById('inviteInputs').innerHTML = `
+        <div>
+          <input type="email" name="email[]" placeholder="example@example.com" required />
+          <select name="role[]" required>
+            <option disabled selected>Select Role</option>
+            <option>Read-only</option>
+            <option>Admin</option>
+          </select>
+        </div>
+      `;
+    });
+
+    document.getElementById('teamTable').addEventListener('click', function (e) {
+      const row = e.target.closest('tr');
+
+      if (e.target.classList.contains('delete-btn')) {
+        row.remove();
+      }
+
+      if (e.target.classList.contains('edit-btn')) {
+        const nameCell = row.cells[1];
+        const roleCell = row.cells[2];
+        const actionsCell = row.cells[3];
+
+        const email = nameCell.getAttribute('data-email');
+        const currentName = nameCell.firstChild.textContent.trim();
+        const currentRole = roleCell.innerText.trim();
+
+        row.dataset.originalName = currentName;
+        row.dataset.originalEmail = email;
+        row.dataset.originalRole = currentRole;
+
+        nameCell.innerHTML = `
+          <input class="edit-input" type="text" value="${currentName}" />
+          <br />
+          <input class="edit-input" type="email" value="${email}" />
+        `;
+        roleCell.innerHTML = `
+          <select class="edit-select">
+            <option ${currentRole === 'Read-only' ? 'selected' : ''}>Read-only</option>
+            <option ${currentRole === 'Admin' ? 'selected' : ''}>Admin</option>
+          </select>
+        `;
+        actionsCell.innerHTML = `
+          <button class="save-btn">Save</button>
+          <button class="cancel-btn">Cancel</button>
+        `;
+      }
+
+      if (e.target.classList.contains('cancel-btn')) {
+        const originalName = row.dataset.originalName;
+        const originalEmail = row.dataset.originalEmail;
+        const originalRole = row.dataset.originalRole;
+
+        row.cells[1].innerHTML = `${originalName} <br /><small>${originalEmail}</small>`;
+        row.cells[1].setAttribute('data-email', originalEmail);
+        row.cells[2].innerText = originalRole;
+        row.cells[3].innerHTML = `
+          <button class="edit-btn">Edit</button>
+          <button class="delete-btn">Delete</button>
+        `;
+      }
+
+      if (e.target.classList.contains('save-btn')) {
+        const nameInput = row.querySelector('input[type="text"]');
+        const emailInput = row.querySelector('input[type="email"]');
+        const roleSelect = row.querySelector('select');
+
+        const newName = nameInput.value.trim();
+        const newEmail = emailInput.value.trim();
+        const newRole = roleSelect.value;
+
+        row.cells[1].innerHTML = `${newName} <br /><small>${newEmail}</small>`;
+        row.cells[1].setAttribute('data-email', newEmail);
+        row.cells[2].innerText = newRole;
+        row.cells[3].innerHTML = `
+          <button class="edit-btn">Edit</button>
+          <button class="delete-btn">Delete</button>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>
