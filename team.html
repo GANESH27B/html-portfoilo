@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #f1f4f9;
+      color: #333;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #fff;
+      height: 100vh;
+      position: fixed;
+      border-right: 1px solid #ddd;
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+    .sidebar.collapsed {
+      transform: translateX(-220px);
+    }
+    .sidebar-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      margin: 20px 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+    .sidebar ul li a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      flex: 1;
+    }
+    .sidebar ul li a:hover {
+      color: #007BFF;
+    }
+    .sidebar .edit-team-btn, .sidebar .delete-team-btn, .sidebar .save-team-btn, .sidebar .add-team-btn {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .sidebar .edit-team-btn, .sidebar .save-team-btn, .sidebar .add-team-btn {
+      background-color: #007BFF;
+      color: white;
+    }
+    .sidebar .delete-team-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    .sidebar .team-input, .sidebar .add-team-input {
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      width: 150px;
+    }
+    .sidebar .edit-mode-toggle {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      width: 100%;
+      text-align: center;
+    }
+    .sidebar .edit-mode-toggle.active {
+      background-color: #dc3545;
+    }
+    .sidebar .add-team-section {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 5px;
+    }
+    .content {
+      margin-left: 240px;
+      padding: 20px;
+      transition: margin-left 0.3s ease;
+    }
+    .content.expanded {
+      margin-left: 20px;
+    }
+    .invite-section, .team-section, .all-teams-section {
+      background-color: #fff;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .invite-section input,
+    .invite-section select {
+      padding: 10px;
+      margin-right: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    .invite-section button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .team-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .team-member {
+      background: #fefefe;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 20px;
+      width: 220px;
+      text-align: center;
+      transition: 0.3s;
+    }
+    .team-member:hover {
+      transform: translateY(-5px);
+    }
+    .team-member img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+    .team-member h3 {
+      font-size: 1.1rem;
+      margin: 5px 0;
+    }
+    .team-member p {
+      margin: 5px 0;
+      font-size: 0.9rem;
+      color: #666;
+    }
+    .team-member button {
+      margin-top: 10px;
+      margin-right: 5px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .team-member .edit, .team-member .save {
+      background-color: #007BFF;
+      color: white;
+    }
+    .team-member .delete {
+      background-color: #dc3545;
+      color: white;
+    }
+    .team-member input, .team-member select {
+      padding: 5px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 100%;
+      font-size: 0.9rem;
+    }
+    .custom-file-upload {
+      display: inline-block;
+      padding: 8px 12px;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 5px;
+      text-align: center;
+    }
+    .custom-file-upload:hover {
+      background-color: #0056b3;
+    }
+    .file-name {
+      font-size: 0.8rem;
+      color: #666;
+      margin-top: 5px;
+      word-break: break-all;
+    }
+    .team-member input[type="file"] {
+      display: none;
+    }
+    .hidden {
+      display: none;
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-220px);
+      }
+      .sidebar.collapsed {
+        transform: translateX(0);
+      }
+      .content {
+        margin-left: 20px;
+      }
+      .content.expanded {
+        margin-left: 240px;
+      }
+      .sidebar-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">☰</button>
+  <div class="sidebar">
+    <button class="edit-mode-toggle" onclick="toggleEditMode()" aria-label="Toggle edit teams mode">Edit Teams</button>
+    <div class="add-team-section hidden"></div>
+    <ul>
+      <li><a href="#" onclick="showSection('invite-section', 'default-team')" aria-label="View all teams">All Teams</a></li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <div class="invite-section hidden" id="invite-section">
+      <h2>Invite Team Members</h2>
+      <input type="text" id="name" placeholder="Name" aria-label="Team member name">
+      <input type="email" id="email" placeholder="Email" aria-label="Team member email">
+      <select id="role" aria-label="Select team member role">
+        <option>Admin</option>
+        <option>Read-only</option>
+      </select>
+      <select id="team-select" aria-label="Select team">
+        <option value="default-team">Default Team</option>
+      </select>
+      <button onclick="addMember()" aria-label="Send invite to team member">Send Invite</button>
+    </div>
+
+    <div class="all-teams-section hidden" id="all-teams-section">
+      <h2>All Team Members</h2>
+      <div class="team-cards" id="all-teams-cards"></div>
+    </div>
+
+    <div class="team-section" id="default-team">
+      <h2>Team Members</h2>
+      <div class="team-cards" id="default-team-cards"></div>
+    </div>
+  </div>
+
+  <script>
+    let editMode = false;
+    let activeTeam = "default-team";
+
+    function getAvatar(name) {
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&size=80`;
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.querySelector(".sidebar");
+      const content = document.querySelector(".content");
+      sidebar.classList.toggle("collapsed");
+      content.classList.toggle("expanded");
+    }
+
+    function toggleEditMode() {
+      editMode = !editMode;
+      const toggleBtn = document.querySelector(".edit-mode-toggle");
+      toggleBtn.textContent = editMode ? "Done Editing" : "Edit Teams";
+      toggleBtn.classList.toggle("active", editMode);
+
+      const addTeamSection = document.querySelector(".add-team-section");
+      addTeamSection.classList.toggle("hidden", !editMode);
+
+      if (editMode) {
+        addTeamSection.innerHTML = `
+          <input type="text" class="add-team-input" placeholder="New Team Name" aria-label="New team name">
+          <button class="add-team-btn" onclick="addTeamFromSidebar()" aria-label="Add new team">Add</button>
+        `;
+      } else {
+        addTeamSection.innerHTML = "";
+      }
+
+      const teamItems = document.querySelectorAll(".sidebar ul li");
+      teamItems.forEach(item => {
+        const teamLink = item.querySelector("a");
+        const onclickAttr = teamLink.getAttribute("onclick");
+        if (!onclickAttr || !onclickAttr.includes("team-")) return;
+
+        const teamId = onclickAttr.match(/'team-[^']*'/)[0].replace(/'/g, "");
+        const isDefaultTeam = teamId === "default-team";
+
+        const existingButtons = item.querySelectorAll(".edit-team-btn, .delete-team-btn, .save-team-btn, .team-input");
+        existingButtons.forEach(btn => btn.remove());
+
+        if (editMode && !isDefaultTeam) {
+          const editBtn = document.createElement("button");
+          editBtn.className = "edit-team-btn";
+          editBtn.textContent = "Edit";
+          editBtn.setAttribute("aria-label", `Edit team ${teamLink.textContent}`);
+          editBtn.onclick = () => editTeam(item, teamId);
+          item.appendChild(editBtn);
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.className = "delete-team-btn";
+          deleteBtn.textContent = "Delete";
+          deleteBtn.setAttribute("aria-label", `Delete team ${teamLink.textContent}`);
+          deleteBtn.onclick = () => deleteTeam(teamId, item);
+          item.appendChild(deleteBtn);
+        }
+      });
+    }
+
+    function addTeamFromSidebar() {
+      const input = document.querySelector(".add-team-input");
+      const teamName = input.value.trim();
+      if (!teamName) {
+        alert("Please enter a team name.");
+        return;
+      }
+      const normalizedTeamId = `team-${teamName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}`;
+      if (document.getElementById(normalizedTeamId)) {
+        alert("Team name already exists.");
+        return;
+      }
+
+      const sidebarList = document.querySelector(".sidebar ul");
+      const teamSectionId = normalizedTeamId;
+      const newTeamItem = document.createElement("li");
+      newTeamItem.innerHTML = `<a href="#" onclick="showSection('team-section', '${teamSectionId}')" aria-label="View team ${teamName}">${teamName}</a>`;
+      sidebarList.appendChild(newTeamItem);
+
+      const newTeamSection = document.createElement("div");
+      newTeamSection.className = "team-section hidden";
+      newTeamSection.id = teamSectionId;
+      newTeamSection.innerHTML = `
+        <h2>${teamName} Members</h2>
+        <div class="team-cards" id="${teamSectionId}-cards"></div>
+      `;
+      document.querySelector(".content").appendChild(newTeamSection);
+
+      const teamSelect = document.getElementById("team-select");
+      const option = document.createElement("option");
+      option.value = teamSectionId;
+      option.textContent = teamName;
+      teamSelect.appendChild(option);
+
+      input.value = '';
+      saveData();
+      alert("Team created successfully!");
+      showSection('team-section', teamSectionId);
+
+      toggleEditMode();
+      toggleEditMode();
+    }
+
+    function editTeam(item, teamId) {
+      const teamLink = item.querySelector("a");
+      const currentName = teamLink.textContent;
+      teamLink.style.display = "none";
+
+      const editBtn = item.querySelector(".edit-team-btn");
+      const deleteBtn = item.querySelector(".delete-team-btn");
+      if (editBtn) editBtn.remove();
+      if (deleteBtn) deleteBtn.remove();
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.className = "team-input";
+      input.value = currentName;
+      input.setAttribute("aria-label", "Edit team name");
+      item.appendChild(input);
+
+      const saveBtn = document.createElement("button");
+      saveBtn.className = "save-team-btn";
+      saveBtn.textContent = "Save";
+      saveBtn.setAttribute("aria-label", `Save team name for ${currentName}`);
+      saveBtn.onclick = () => saveTeam(item, teamId, input.value.trim());
+      item.appendChild(saveBtn);
+
+      input.focus();
+    }
+
+    function saveTeam(item, teamId, newName) {
+      if (!newName) {
+        alert("Please enter a team name.");
+        return;
+      }
+      const normalizedNewId = `team-${newName.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}`;
+      if (normalizedNewId !== teamId && document.getElementById(normalizedNewId)) {
+        alert("Team name already exists.");
+        return;
+      }
+
+      const teamLink = item.querySelector("a");
+      teamLink.textContent = newName;
+      teamLink.style.display = "block";
+      teamLink.setAttribute("onclick", `showSection('team-section', '${normalizedNewId}')`);
+
+      const teamSection = document.getElementById(teamId);
+      if (teamSection) {
+        teamSection.id = normalizedNewId;
+        teamSection.querySelector("h2").textContent = `${newName} Members`;
+        const cardContainer = teamSection.querySelector(".team-cards");
+        cardContainer.id = `${normalizedNewId}-cards`;
+      }
+
+      const teamSelect = document.getElementById("team-select");
+      const option = teamSelect.querySelector(`option[value="${teamId}"]`);
+      if (option) {
+        option.value = normalizedNewId;
+        option.textContent = newName;
+      }
+
+      item.querySelector(".team-input").remove();
+      item.querySelector(".save-team-btn").remove();
+
+      toggleEditMode();
+      toggleEditMode();
+
+      saveData();
+      showSection("team-section", normalizedNewId);
+    }
+
+    function deleteTeam(teamId, item) {
+      if (teamId === "default-team") {
+        alert("Cannot delete the default team.");
+        return;
+      }
+      if (confirm(`Are you sure you want to delete the team "${item.querySelector("a").textContent}" and all its members?`)) {
+        item.remove();
+
+        const teamSection = document.getElementById(teamId);
+        if (teamSection) teamSection.remove();
+
+        const teamSelect = document.getElementById("team-select");
+        const option = teamSelect.querySelector(`option[value="${teamId}"]`);
+        if (option) option.remove();
+
+        if (activeTeam === teamId) {
+          activeTeam = "default-team";
+          showSection("invite-section", "default-team");
+        }
+
+        saveData();
+        if (activeTeam === "default-team") {
+          showSection("invite-section", "default-team");
+        }
+      }
+    }
+
+    function showSection(sectionId, teamId = activeTeam) {
+      const inviteSection = document.getElementById('invite-section');
+      const allTeamsSection = document.getElementById('all-teams-section');
+      
+      if (teamId === "default-team") {
+        inviteSection.classList.remove('hidden');
+        allTeamsSection.classList.remove('hidden');
+        document.querySelectorAll('.team-section').forEach(section => {
+          section.classList.add('hidden');
+        });
+
+        const allTeamsCards = document.getElementById('all-teams-cards');
+        allTeamsCards.innerHTML = '';
+
+        const data = JSON.parse(localStorage.getItem("teamManagementData") || "[]");
+        data.forEach(team => {
+          team.members.forEach(member => {
+            const card = document.createElement("div");
+            card.className = "team-member";
+            card.innerHTML = `
+              <img src="${member.avatar}" alt="Profile picture of ${member.name}">
+              <h3>${member.name}</h3>
+              <p>${member.email}</p>
+              <p><strong>${member.role}</strong></p>
+              <p>Team: ${team.teamName}</p>
+            `;
+            allTeamsCards.appendChild(card);
+          });
+        });
+      } else {
+        inviteSection.classList.add('hidden');
+        allTeamsSection.classList.add('hidden');
+        showTeamSection(teamId);
+      }
+    }
+
+    function showTeamSection(sectionId) {
+      document.querySelectorAll('.team-section').forEach(section => {
+        section.classList.add('hidden');
+      });
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.classList.remove('hidden');
+        activeTeam = sectionId;
+      }
+    }
+
+    function addMember() {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const role = document.getElementById("role").value;
+      const teamId = document.getElementById("team-select").value;
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!name || !email) {
+        alert("Please fill in both name and email.");
+        return;
+      }
+      if (!emailRegex.test(email)) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      const data = JSON.parse(localStorage.getItem("teamManagementData") || "[]");
+      const emailExists = data.some(team => team.members.some(member => member.email.toLowerCase() === email.toLowerCase()));
+      if (emailExists) {
+        alert("This email is already used by another team member.");
+        return;
+      }
+
+      const cardContainer = document.getElementById(`${teamId}-cards`);
+      const card = document.createElement("div");
+      card.className = "team-member";
+      const avatar = getAvatar(name);
+      card.innerHTML = `
+        <img src="${avatar}" alt="Profile picture of ${name}">
+        <h3>${name}</h3>
+        <p>${email}</p>
+        <p><strong>${role}</strong></p>
+        <button class="edit" onclick="editMember(this, '${teamId}')" aria-label="Edit team member ${name}">Edit</button>
+        <button class="delete" onclick="deleteMember(this, '${teamId}', '${email}')" aria-label="Delete team member ${name}">Delete</button>
+      `;
+      cardContainer.appendChild(card);
+      document.getElementById("name").value = '';
+      document.getElementById("email").value = '';
+      saveData();
+      showSection('invite-section', 'default-team');
+    }
+
+    function deleteMember(btn, teamId, email) {
+      if (confirm("Are you sure you want to delete this team member from all teams?")) {
+        document.querySelectorAll(".team-section").forEach(section => {
+          const cards = section.querySelectorAll(".team-member");
+          cards.forEach(card => {
+            const memberEmail = card.querySelectorAll("p")[0].innerText;
+            if (memberEmail.toLowerCase() === email.toLowerCase()) {
+              card.remove();
+            }
+          });
+        });
+        saveData();
+        showSection(activeTeam === "default-team" ? 'invite-section' : 'team-section', activeTeam);
+      }
+    }
+
+    function editMember(btn, teamId) {
+      const card = btn.parentElement;
+      const imgElement = card.querySelector("img");
+      const nameElement = card.querySelector("h3");
+      const emailElement = card.querySelectorAll("p")[0];
+      const roleElement = card.querySelectorAll("p")[1];
+      const deleteBtn = card.querySelector(".delete");
+
+      const currentName = nameElement.innerText;
+      const currentEmail = emailElement.innerText;
+      const currentRole = roleElement.innerText.replace("strong", "").trim();
+      const currentAvatar = imgElement.src;
+
+      const uniqueId = `avatar-upload-${Math.random().toString(36).substr(2, 9)}`;
+
+      imgElement.outerHTML = `
+        <div>
+          <img src="${currentAvatar}" alt="Profile picture of ${currentName}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+          <label for="${uniqueId}" class="custom-file-upload" role="button" aria-label="Choose a new profile image">Choose Image</label>
+          <input id="${uniqueId}" type="file" accept="image/*" onchange="previewImage(this, this.previousElementSibling.previousElementSibling, this.parentElement)" aria-hidden="true">
+          <div class="file-name" aria-live="polite"></div>
+        </div>
+      `;
+      nameElement.innerHTML = `<input type="text" value="${currentName}" aria-label="Edit name">`;
+      emailElement.innerHTML = `<input type="email" value="${currentEmail}" aria-label="Edit email">`;
+      roleElement.innerHTML = `
+        <select aria-label="Select role">
+          <option ${currentRole === "Admin" ? "selected" : ""}>Admin</option>
+          <option ${currentRole === "Read-only" ? "selected" : ""}>Read-only</option>
+        </select>
+      `;
+
+      btn.innerText = "Save";
+      btn.className = "save";
+      btn.setAttribute("aria-label", `Save team member ${currentName}`);
+      btn.onclick = () => saveMember(card, btn, teamId);
+      deleteBtn.style.display = "none";
+    }
+
+    function previewImage(input, imgElement, container) {
+      const file = input.files[0];
+      const fileNameDisplay = container.querySelector(".file-name");
+
+      if (file) {
+        if (!file.type.startsWith("image/")) {
+          fileNameDisplay.textContent = "Error: Please select an image file.";
+          input.value = "";
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imgElement.src = e.target.result;
+          fileNameDisplay.textContent = `Selected: ${file.name}`;
+        };
+        reader.onerror = function() {
+          fileNameDisplay.textContent = "Error: Failed to read the file.";
+          input.value = "";
+        };
+        reader.readAsDataURL(file);
+      } else {
+        fileNameDisplay.textContent = "No file selected.";
+      }
+    }
+
+    function saveMember(card, btn, teamId) {
+      const imgElement = card.querySelector("img");
+      const nameInput = card.querySelector("h3 input");
+      const emailInput = card.querySelector("p input");
+      const roleSelect = card.querySelector("p select");
+      const deleteBtn = card.querySelector(".delete");
+
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!nameInput.value.trim() || !emailInput.value.trim()) {
+        alert("Please fill in both name and email.");
+        return;
+      }
+      if (!emailRegex.test(emailInput.value.trim())) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      card.querySelector("div").outerHTML = `<img src="${imgElement.src}" alt="Profile picture of ${nameInput.value.trim()}">`;
+      card.querySelector("h3").innerHTML = nameInput.value.trim();
+      card.querySelectorAll("p")[0].innerHTML = emailInput.value.trim();
+      card.querySelectorAll("p")[1].innerHTML = `<strong>${roleSelect.value}</strong>`;
+
+      btn.innerText = "Edit";
+      btn.className = "edit";
+      btn.setAttribute("aria-label", `Edit team member ${nameInput.value.trim()}`);
+      btn.onclick = () => editMember(btn, teamId);
+      deleteBtn.style.display = "inline-block";
+      saveData();
+      showSection(activeTeam === "default-team" ? 'invite-section' : 'team-section', activeTeam);
+    }
+
+    function saveData() {
+      const teams = [];
+      document.querySelectorAll(".team-section").forEach(section => {
+        const teamName = section.querySelector("h2").innerText.replace(" Members", "");
+        const teamId = section.id;
+        const members = [];
+        section.querySelectorAll(".team-member").forEach(card => {
+          members.push({
+            name: card.querySelector("h3").innerText,
+            email: card.querySelectorAll("p")[0].innerText,
+            role: card.querySelectorAll("p")[1].innerText.replace("strong", "").trim(),
+            avatar: card.querySelector("img").src
+          });
+        });
+        teams.push({ teamName, teamId, members });
+      });
+      localStorage.setItem("teamManagementData", JSON.stringify(teams));
+    }
+
+    function loadData() {
+      const data = JSON.parse(localStorage.getItem("teamManagementData") || "[]");
+      data.forEach(team => {
+        if (team.teamId !== "default-team") {
+          const sidebarList = document.querySelector(".sidebar ul");
+          const newTeamItem = document.createElement("li");
+          newTeamItem.innerHTML = `<a href="#" onclick="showSection('team-section', '${team.teamId}')" aria-label="View team ${team.teamName}">${team.teamName}</a>`;
+          sidebarList.appendChild(newTeamItem);
+
+          const newTeamSection = document.createElement("div");
+          newTeamSection.className = "team-section hidden";
+          newTeamSection.id = team.teamId;
+          newTeamSection.innerHTML = `
+            <h2>${team.teamName} Members</h2>
+            <div class="team-cards" id="${team.teamId}-cards"></div>
+          `;
+          document.querySelector(".content").appendChild(newTeamSection);
+
+          const teamSelect = document.getElementById("team-select");
+          const option = document.createElement("option");
+          option.value = team.teamId;
+          option.textContent = team.teamName;
+          teamSelect.appendChild(option);
+        }
+
+        const cardContainer = document.getElementById(`${team.teamId}-cards`);
+        team.members.forEach(member => {
+          const card = document.createElement("div");
+          card.className = "team-member";
+          card.innerHTML = `
+            <img src="${member.avatar}" alt="Profile picture of ${member.name}">
+            <h3>${member.name}</h3>
+            <p>${member.email}</p>
+            <p><strong>${member.role}</strong></p>
+            <button class="edit" onclick="editMember(this, '${team.teamId}')" aria-label="Edit team member ${member.name}">Edit</button>
+            <button class="delete" onclick="deleteMember(this, '${team.teamId}', '${member.email}')" aria-label="Delete team member ${member.name}">Delete</button>
+          `;
+          cardContainer.appendChild(card);
+        });
+      });
+
+      if (activeTeam === "default-team") {
+        showSection('invite-section', 'default-team');
+      }
+    }
+
+    const defaultMembers = [
+    ];
+
+    function initialize() {
+      if (!localStorage.getItem("teamManagementData")) {
+        defaultMembers.forEach(m => {
+          document.getElementById("name").value = m.name;
+          document.getElementById("email").value = m.email;
+          document.getElementById("role").value = m.role;
+          document.getElementById("team-select").value = "default-team";
+          addMember();
+        });
+      } else {
+        loadData();
+      }
+      showSection('invite-section', 'default-team');
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
