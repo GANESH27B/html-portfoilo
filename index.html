@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kare Sigbed</title>
+  <script src="https://unpkg.com/three"></script>
+  <script src="https://unpkg.com/globe.gl"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #121f33;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      
+    }
+    nav {
+      background: transparent;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #7f18ce;
+    }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+    }
+    .nav-links li a {
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links li a:hover {
+      color: #60a5fa;
+    }
+    .main-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0px;
+    }
+    .content-container {
+      display: flex;
+      justify-content: center;
+      max-width: 1200px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      
+      
+    }
+    .globe-container {
+      width: 100%;
+      max-width: 700px;
+      height: 700px;
+      margin: auto;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: var(--white);
+    }
+
+    .acm_logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="header-brand">
+      <div class="acm_logo">
+        <img src="acm.jpg" alt="Description"  style="position: absolute;  width: 50px; height: 50px;">
+      </div>
+      <h1>ACM SIGBED</h1>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Schedule</a></li>
+      <li><a href="#">Activities</a></li>
+      <li><a href="#">Sponsors</a></li>
+      <li><a href="#">Innovation Corner</a></li>
+      <li><a href="team.html">Team</a></li>
+      <li><a href="#">Gallery</a></li>
+      <li><a href="#">Contact Us</a></li>
+      <li><a href="login.html">Log In</a></li>
+    </ul>
+  </nav>
+  <div class="main-container">
+    <div class="content-container">
+      <img src="acm.jpg" alt="Description" style="width: 400px; height: 400px; ">
+      <div class="globe-container" id="globeViz"></div>
+      <div style="background-color:transparent;  text-shadow: 2px 2px 6px rgb(67, 209, 222);font-size: 40px;
+ width: 600px; margin-left: 600px; height: 400px; position: absolute;  "><pre><h1 style="font-size: 50px; ">WELCOME TO KARE ACM SIGBED</h1><h2 style="font-size: 40px;">            CHEPTER</h2></div>
+    </div>
+  </div>
+  <script>
+    // Globe Initialization
+    const globeEl = document.getElementById('globeViz');
+    if (globeEl) {
+      const globe = Globe()
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+        .backgroundColor('rgba(0,0,0,0)')
+        .width(globeEl.offsetWidth)
+        .height(globeEl.offsetHeight)
+        (globeEl);
+
+      globe.controls().autoRotate = true;
+      globe.controls().autoRotateSpeed = 1.5;
+      globe.controls().enableZoom = false;
+
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          globe.width(globeEl.offsetWidth);
+          globe.height(globeEl.offsetHeight);
+        }, 100);
+      });
+    }
+  </script>
+</body>
+</html>

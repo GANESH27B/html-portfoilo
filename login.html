@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            font-family: Arial, sans-serif;
+        }
+
+        #main-container {
+            background: transparent;
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 28rem;
+            transition: transform 0.3s ease;
+        }
+
+        #main-container:hover {
+            transform: scale(1.05);
+        }
+
+        #form-title {
+            font-size: 1.875rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #1f2937;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        #login-btn, #register-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #login-btn {
+            background: #2563eb;
+            color: #ffffff;
+            border-radius: 9999px 0 0 9999px;
+        }
+
+        #register-btn {
+            background: #e5e7eb;
+            color: #4b5563;
+            border-radius: 0 9999px 9999px 0;
+        }
+
+        #login-btn.active, #register-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+        }
+
+        #error-message, #success-message, #forgot-error-message, #forgot-success-message {
+            display: none;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        #error-message, #forgot-error-message {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        #success-message, #forgot-success-message {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        label {
+            display: block;
+            color: #1f2937;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        #forgot-password-link {
+            text-align: right;
+            margin-bottom: 1.5rem;
+        }
+
+        #forgot-password-btn {
+            background: none;
+            border: none;
+            color: #2563eb;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        #forgot-password-btn:hover {
+            text-decoration: underline;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            background: #2563eb;
+            color: #ffffff;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background: #1d4ed8;
+        }
+
+        #forgot-password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        #forgot-password-modal > div {
+            background: #ffffff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 24rem;
+        }
+
+        #forgot-password-modal h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #1f2937;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        #cancel-forgot-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background: none;
+            border: none;
+            color: #4b5563;
+            cursor: pointer;
+        }
+
+        #cancel-forgot-btn:hover {
+            color: #1f2937;
+        }
+
+        #forgot-password-form button[type="submit"] {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="main-container">
+        <h2 id="form-title">Welcome Back</h2>
+        <div class="button-group">
+            <button id="login-btn" class="active">Login</button>
+            <button id="register-btn">Register</button>
+        </div>
+        <div id="error-message"></div>
+        <div id="success-message"></div>
+        <form id="auth-form">
+            <div id="register-fields" class="hidden">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerNo">Register Number</label>
+                    <input type="text" id="registerNo" name="registerNo" placeholder="Enter register number" required>
+                </div>
+                <div class="form-group">
+                    <label for="memberId">Member ID</label>
+                    <input type="text" id="memberId" name="memberId" placeholder="Enter member ID" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div id="forgot-password-link">
+                <button type="button" id="forgot-password-btn">Forgot Password?</button>
+            </div>
+            <button type="submit">Sign In</button>
+        </form>
+    </div>
+
+    <div id="forgot-password-modal" class="hidden">
+        <div>
+            <h3>Reset Password</h3>
+            <form id="forgot-password-form">
+                <div class="form-group">
+                    <label for="forgot-email">Email Address</label>
+                    <input type="email" id="forgot-email" placeholder="Enter your email" required>
+                </div>
+                <div id="forgot-error-message"></div>
+                <div id="forgot-success-message"></div>
+                <div class="modal-buttons">
+                    <button type="button" id="cancel-forgot-btn">Cancel</button>
+                    <button type="submit">Send Reset Link</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const isLoginState = { isLogin: true };
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function mockApiCall(data, endpoint) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (endpoint === 'forgot-password') {
+                        if (!validateEmail(data.email)) {
+                            reject('Invalid email address');
+                        } else {
+                            resolve('Password reset link sent to your email');
+                        }
+                    } else if (endpoint === 'register') {
+                        if (!data.name || !data.registerNo || !data.memberId || !data.email || !data.password) {
+                            reject('All fields are required');
+                        } else if (!validateEmail(data.email)) {
+                            reject('Invalid email address');
+                        } else {
+                            resolve('Registration successful');
+                        }
+                    } else if (endpoint === 'login') {
+                        if (!data.email || !data.password) {
+                            reject('Email and password are required');
+                        } else if (!validateEmail(data.email)) {
+                            reject('Invalid email address');
+                        } else {
+                            resolve('Login successful');
+                        }
+                    }
+                }, 1000);
+            });
+        }
+
+        function showMessage(elementId, message, isError = true) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.style.display = 'block';
+            if (isError) {
+                element.classList.add('bg-red-100', 'text-red-700');
+                element.classList.remove('bg-green-100', 'text-green-700');
+            } else {
+                element.classList.add('bg-green-100', 'text-green-700');
+                element.classList.remove('bg-red-100', 'text-red-700');
+            }
+        }
+
+        function clearMessages() {
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+            const forgotErrorMessage = document.getElementById('forgot-error-message');
+            const forgotSuccessMessage = document.getElementById('forgot-success-message');
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            forgotErrorMessage.style.display = 'none';
+            forgotSuccessMessage.style.display = 'none';
+        }
+
+        function resetForm() {
+            document.getElementById('auth-form').reset();
+            document.getElementById('forgot-password-form').reset();
+        }
+
+        function toggleForm() {
+            const isLogin = isLoginState.isLogin;
+            document.getElementById('form-title').textContent = isLogin ? 'Welcome Back' : 'Create Account';
+            document.getElementById('login-btn').className = isLogin ? 'active' : '';
+            document.getElementById('register-btn').className = !isLogin ? 'active' : '';
+            document.getElementById('register-fields').style.display = isLogin ? 'none' : 'block';
+            document.getElementById('forgot-password-link').style.display = isLogin ? 'block' : 'none';
+            document.querySelector('#auth-form button[type="submit"]').textContent = isLogin ? 'Sign In' : 'Sign Up';
+            clearMessages();
+            resetForm();
+        }
+
+        document.getElementById('login-btn').addEventListener('click', () => {
+            isLoginState.isLogin = true;
+            toggleForm();
+        });
+
+        document.getElementById('register-btn').addEventListener('click', () => {
+            isLoginState.isLogin = false;
+            toggleForm();
+        });
+
+        document.getElementById('forgot-password-btn').addEventListener('click', () => {
+            document.getElementById('forgot-password-modal').style.display = 'flex';
+            clearMessages();
+        });
+
+        document.getElementById('cancel-forgot-btn').addEventListener('click', () => {
+            document.getElementById('forgot-password-modal').style.display = 'none';
+            clearMessages();
+            resetForm();
+        });
+
+        document.getElementById('auth-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessages();
+            const form = e.target;
+            const data = {
+                name: form.name?.value || '',
+                registerNo: form.registerNo?.value || '',
+                memberId: form.memberId?.value || '',
+                email: form.email.value,
+                password: form.password.value
+            };
+            try {
+                const response = await mockApiCall(data, isLoginState.isLogin ? 'login' : 'register');
+                showMessage('success-message', response, false);
+                resetForm();
+            } catch (err) {
+                showMessage('error-message', err);
+            }
+        });
+
+        document.getElementById('forgot-password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearMessages();
+            const email = document.getElementById('forgot-email').value;
+            try {
+                const response = await mockApiCall({ email }, 'forgot-password');
+                showMessage('forgot-success-message', response, false);
+                resetForm();
+                document.getElementById('forgot-password-modal').style.display = 'none';
+            } catch (err) {
+                showMessage('forgot-error-message', err);
+            }
+        });
+    </script>
+</body>
+</html>
